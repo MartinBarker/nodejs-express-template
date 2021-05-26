@@ -36,7 +36,8 @@ router.get(/^\/callback(.*)/, async function (req, res) {
   let spotifyAuthCode = '';
   if(fullUrl.includes('?code=')){
     console.log(`\n fullUrl=[${fullUrl}] \n`)
-    spotifyAuthCode = fullUrl.substr(fullUrl.lastIndexOf('?code=')+7);
+    spotifyAuthCode = fullUrl.substr(fullUrl.lastIndexOf('?code=')+6);
+    //spotifyAuthCode=`${spotifyAuthCode}`
     console.log(`\n spotifyAuthCode=[${spotifyAuthCode}] \n`)
 
     //login to spotify api
@@ -50,6 +51,7 @@ router.get(/^\/callback(.*)/, async function (req, res) {
 })
 
 function useSpotifyApi(access_token){
+  console.log('useSpotifyApi access_token=[', access_token, ']')
   var SpotifyWebApi = require('spotify-web-api-node');
 
   // credentials are optional
