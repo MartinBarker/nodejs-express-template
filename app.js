@@ -30,13 +30,17 @@ router.get('/login', function(req, res) {
 //if route begins with /callback
 router.get(/^\/callback(.*)/, async function (req, res) {
   var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-  console.log('fullUrl = ', fullUrl)
+
 
   //get access_token from url
   let spotifyAuthCode = '';
   if(fullUrl.includes('?code=')){
+    console.log(`\n fullUrl=[${fullUrl}] \n`)
     spotifyAuthCode = fullUrl.substr(fullUrl.lastIndexOf('?code=')+7);
-    console.log('spotifyAuthCode=',spotifyAuthCode);
+    console.log(`\n spotifyAuthCode=[${spotifyAuthCode}] \n`)
+
+    //login to spotify api
+    useSpotifyApi(spotifyAuthCode.trim())
   }
 
     res.render('spotify.html', {
@@ -44,6 +48,30 @@ router.get(/^\/callback(.*)/, async function (req, res) {
     });
   
 })
+
+function useSpotifyApi(access_token){
+  var SpotifyWebApi = require('spotify-web-api-node');
+
+  // credentials are optional
+  var spotifyApi = new SpotifyWebApi({
+  //  clientId: 'zzz',
+  //  clientSecret: 'zzz',
+    redirectUri: 'http://localhost:3000/callback'
+  });
+
+  spotifyApi.setAccessToken(access_token);
+
+  // Get Elvis' albums
+  spotifyApi.getArtistAlbums('43ZHCT0cAZBISjO8DG9PnE').then(
+    function(data) {
+      console.log('Artist albums', data.body);
+    },
+    function(err) {
+      console.error("err=",err);
+    }
+  );
+
+}
 
 //add the router
 app.use('/', router);
